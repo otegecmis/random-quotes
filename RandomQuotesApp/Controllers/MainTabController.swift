@@ -5,7 +5,20 @@ final class MainTabController: UITabBarController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureViewControllers()
+        
+        if isUserLoggedIn() {
+            configureViewControllers()
+        } else {
+            view.backgroundColor = .systemBackground
+        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        if !isUserLoggedIn() {
+            showSignInScreen()
+        }
     }
     
     // MARK: - Helpers
@@ -13,7 +26,25 @@ final class MainTabController: UITabBarController {
         view.backgroundColor = .systemBackground
         
         let randomQuoteVC = tabController(title: "Random Quote", image: UIImage(systemName: "quote.bubble"), rootViewController: RandomQuoteVC())
-        viewControllers = [randomQuoteVC]
+        let profileVC = tabController(title: "Profile", image: UIImage(systemName: "person.bubble"), rootViewController: ProfileVC())
+        
+        viewControllers = [randomQuoteVC, profileVC]
+    }
+    
+    private func showSignInScreen() {
+        let signInVC = SignInVC()
+        let navController = UINavigationController(rootViewController: signInVC)
+        
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true, completion: nil)
+    }
+    
+    private func isUserLoggedIn() -> Bool {
+        if let accessToken = UserDefaults.standard.string(forKey: "access_token"), !accessToken.isEmpty {
+            return true
+        }
+        
+        return false
     }
 }
 
