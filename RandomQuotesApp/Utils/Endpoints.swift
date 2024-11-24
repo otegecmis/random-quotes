@@ -8,7 +8,7 @@ struct Endpoints {
     }
     
     struct Users {
-        static let signIn = "\(getBaseURL())/users/signin"
+        static let signIn = "\(getBaseURL())/users/login"
         static let refreshTokens = "\(getBaseURL())/users/refresh-tokens"
     }
     
