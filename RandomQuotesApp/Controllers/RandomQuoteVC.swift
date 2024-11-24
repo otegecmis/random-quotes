@@ -43,8 +43,20 @@ final class RandomQuoteVC: UIViewController {
     }
     
     func getRandomQuote() {
-        quoteLabel.text = "The only way to do great work is to love what you do."
-        authorLabel.text = "Steve Jobs"
+        QuotesService().fetchRandomQuote { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let quote):
+                DispatchQueue.main.async {
+                    self.quoteLabel.text = quote.quote
+                    self.authorLabel.text = quote.author
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    self.presentAlertOnMainThread(title: "Error", message: error.localizedDescription, buttonTitle: "Ok")
+                }
+            }
+        }
     }
 }
 
