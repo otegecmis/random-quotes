@@ -12,7 +12,7 @@ struct LoginResponse: Codable {
 
 class AuthService {
     static func signIn(credentials: [String: String], completion: @escaping (Result<Tokens, Error>) -> Void) {
-        var request = URLRequest(url: URL(string: Endpoints.Users.signIn)!)
+        var request = URLRequest(url: URL(string: Endpoints.Auth.signIn)!)
         
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

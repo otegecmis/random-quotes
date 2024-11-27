@@ -1,6 +1,6 @@
 import UIKit
 
-class AuthTextField: UITextField {
+class RQTextField: UITextField {
     
     // MARK: - Initializers
     init(placeholder: String, isSecureTextEntry: Bool = false) {

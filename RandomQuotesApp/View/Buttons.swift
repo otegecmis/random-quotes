@@ -1,6 +1,6 @@
 import UIKit
 
-class AuthButton: UIButton {
+class RQButton: UIButton {
     
     // MARK: - Initializers
     override init(frame: CGRect) {

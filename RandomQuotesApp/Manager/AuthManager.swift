@@ -7,11 +7,13 @@ class AuthManager {
     
     func refreshTokens(completion: @escaping (Result<Void, Error>) -> Void) {
         guard let refreshToken = UserDefaults.standard.string(forKey: "refresh_token") else {
-            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No refresh token found, please sign in again."])))
+            var msg: String = "No refresh token found, please sign in again."
+            
+            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: msg])))
             return
         }
         
-        var request = URLRequest(url: URL(string: Endpoints.Users.refreshTokens)!)
+        var request = URLRequest(url: URL(string: Endpoints.Auth.refreshTokens)!)
         
         request.httpMethod = "PUT"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -26,7 +28,9 @@ class AuthManager {
             }
             
             guard let httpResponse = response as? HTTPURLResponse else {
-                completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid Response"])))
+                var msg: String = "Invalid Response"
+                
+                completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: msg])))
                 return
             }
             
