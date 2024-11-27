@@ -1,14 +1,14 @@
 import UIKit
 
-class SignInVC: UIViewController {
+final class SignInViewController: UIViewController {
     
     // MARK: - Properties
-    private let emailTextField = AuthTextField(placeholder: "Email")
-    private let passwordTextField = AuthTextField(placeholder: "Password", isSecureTextEntry: true)
+    private let emailTextField = RQTextField(placeholder: "Email")
+    private let passwordTextField = RQTextField(placeholder: "Password", isSecureTextEntry: true)
     
-    private let signInButton = AuthButton(title: "Sign In", fontColor: .systemBackground, bgColor: .label)
-    private let forgotPasswordButton = AuthButton(title: "Forgot Password", fontColor: .label, bgColor: .systemBackground)
-    private let createAccountButton = AuthButton(title: "Create Account", fontColor: .label, bgColor: .systemBackground)
+    private let signInButton = RQButton(title: "Sign In", fontColor: .systemBackground, bgColor: .label)
+    private let forgotPasswordButton = RQButton(title: "Forgot Password", fontColor: .label, bgColor: .systemBackground)
+    private let createAccountButton = RQButton(title: "Create Account", fontColor: .label, bgColor: .systemBackground)
     
     private let headerIcon: UIImageView = {
         let imageView = UIImageView(image: UIImage(systemName: "person.bubble"))
@@ -44,6 +44,8 @@ class SignInVC: UIViewController {
         view.addSubview(signInButton)
         view.addSubview(forgotPasswordButton)
         view.addSubview(createAccountButton)
+        
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
         
         NSLayoutConstraint.activate([
             headerIcon.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -119,9 +121,13 @@ class SignInVC: UIViewController {
     @objc private func createAccountTapped() {
         self.presentAlertOnMainThread(title: "Create Account", message: "This feature is not yet implemented.", buttonTitle: "Done")
     }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
 }
 
 @available(iOS 17.0, *)
 #Preview {
-    return SignInVC()
+    return SignInViewController()
 }

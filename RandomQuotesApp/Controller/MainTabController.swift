@@ -2,7 +2,7 @@ import UIKit
 
 final class MainTabController: UITabBarController {
     
-    // MARK: - Lifecycle
+    // MARK: - Lifecycles
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -24,16 +24,18 @@ final class MainTabController: UITabBarController {
     // MARK: - Helpers
     private func configureViewControllers() {
         view.backgroundColor = .systemBackground
+       
+        let profileViewController = tabController(title: "Profile", image: "person", viewController: ProfileViewController())
+        let randomQuoteViewController = tabController(title: "Random Quote", image: "quote.bubble", viewController: RandomQuoteViewController())
+        let settingsViewController = tabController(title: "Settings", image: "gearshape", viewController: SettingsViewController())
         
-        let randomQuoteVC = tabController(title: "Random Quote", image: UIImage(systemName: "quote.bubble"), rootViewController: RandomQuoteVC())
-        let profileVC = tabController(title: "Profile", image: UIImage(systemName: "person.bubble"), rootViewController: ProfileVC())
-        
-        viewControllers = [randomQuoteVC, profileVC]
+        viewControllers = [profileViewController, randomQuoteViewController, settingsViewController]
+        selectedIndex = 1
     }
     
     private func showSignInScreen() {
-        let signInVC = SignInVC()
-        let navController = UINavigationController(rootViewController: signInVC)
+        let signInViewController = SignInViewController()
+        let navController = UINavigationController(rootViewController: signInViewController)
         
         navController.modalPresentationStyle = .fullScreen
         present(navController, animated: true, completion: nil)
@@ -48,15 +50,15 @@ final class MainTabController: UITabBarController {
     }
 }
 
-// MARK: - UITabBarController+Extension
+// MARK: - Extension
 extension UITabBarController {
     
     // MARK: - Helpers
-    func tabController(title: String, image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
-        let nav = UINavigationController(rootViewController: rootViewController)
+    func tabController(title: String, image: String, viewController: UIViewController) -> UINavigationController {
+        let nav = UINavigationController(rootViewController: viewController)
         
         nav.view.backgroundColor = .systemBackground
-        nav.tabBarItem.image = image
+        nav.tabBarItem.image = UIImage(systemName: image)
         nav.title = title
         
         UITabBar.appearance().tintColor = .label
