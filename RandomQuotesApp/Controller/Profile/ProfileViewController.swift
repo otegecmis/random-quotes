@@ -45,11 +45,11 @@ final class ProfileViewController: UIViewController {
     }
     
     // MARK: - Helpers
-    func configureViewController() {
+    private func configureViewController() {
         view.backgroundColor = .systemBackground
     }
     
-    func configureUI() {
+    private func configureUI() {
         view.addSubview(namesurnameLabel)
         view.addSubview(emailLabel)
         view.addSubview(tableView)
@@ -68,16 +68,29 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    func getData() {
-        namesurnameLabel.text = "Name Surname"
-        emailLabel.text = "name.surname@domain.com"
+    private func getData() {
+        guard let userID = UserDefaults.standard.string(forKey: "userID") else {
+            presentAlertOnMainThread(title: "Error", message: "User ID not found. Please log in again.", buttonTitle: "Done")
+            return
+        }
         
-        quotes.append(Quote(
-            id: "1",
-            quote: "I want to put a ding in the universe.",
-            author: "Steve Jobs",
-            information: QuoteInformation(userID: "1"))
-        )
+        UsersService().getUser(userID: userID) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let user):
+                    self?.updateUI(with: user)
+                case .failure(let error):
+                    self?.presentAlertOnMainThread(title: "Error", message: error.localizedDescription, buttonTitle: "Done")
+                }
+            }
+        }
+    }
+    
+    private func updateUI(with user: User) {
+        namesurnameLabel.text = "\(user.name) \(user.surname)"
+        emailLabel.text = "\(user.quotes.count) Quotes"
+        quotes = user.quotes
+        tableView.reloadData()
     }
 }
 
@@ -98,6 +111,7 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         
         cell.textLabel?.text = quote.quote
         cell.detailTextLabel?.text = quote.author
+        cell.detailTextLabel?.textColor = .lightGray
         cell.textLabel?.numberOfLines = 0
         
         return cell

@@ -11,6 +11,10 @@ struct Endpoints {
         static let signIn = "\(getBaseURL())/users/login"
         static let refreshTokens = "\(getBaseURL())/users/refresh-tokens"
     }
+    
+    struct Users {
+        static let getUser = "\(getBaseURL())/users"
+    }
         
     struct Quotes {
         static let randomQuote = "\(getBaseURL())/quotes/random"
