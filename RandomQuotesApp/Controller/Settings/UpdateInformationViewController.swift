@@ -18,10 +18,10 @@ final class UpdateInformationViewController: UIViewController {
     
     private lazy var items: [[UpdateInformationItem]] = [
         [
-            UpdateInformationItem(title: "Name Surname", detail: nil, accessoryView: UIImage(systemName: "pencil.and.list.clipboard"), push: UIViewController()),
-            UpdateInformationItem(title: "Password", detail: nil, accessoryView: UIImage(systemName: "key"), push: UIViewController()),
-            UpdateInformationItem(title: "E-Mail", detail: nil, accessoryView: UIImage(systemName: "mail"), push: UIViewController()),
-            UpdateInformationItem(title: "Deactivate", detail: nil, accessoryView: UIImage(systemName: "person.slash"), push: UIViewController())
+            UpdateInformationItem(title: "Name Surname", detail: nil, accessoryView: UIImage(systemName: "pencil.and.list.clipboard"), push: UpdateNameSurnameViewController()),
+            UpdateInformationItem(title: "Password", detail: nil, accessoryView: UIImage(systemName: "key"), push: UpdatePasswordViewController()),
+            UpdateInformationItem(title: "E-Mail", detail: nil, accessoryView: UIImage(systemName: "mail"), push: UpdateEMailViewController()),
+            UpdateInformationItem(title: "Deactivate", detail: nil, accessoryView: UIImage(systemName: "person.slash"), push: DeactivateAccountViewController())
         ]
     ]
     

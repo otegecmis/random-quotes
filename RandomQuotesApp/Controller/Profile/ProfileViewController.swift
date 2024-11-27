@@ -69,14 +69,14 @@ final class ProfileViewController: UIViewController {
     }
     
     func getData() {
-        namesurnameLabel.text = "James Hunt"
-        emailLabel.text = "james@email.com"
+        namesurnameLabel.text = "Name Surname"
+        emailLabel.text = "name.surname@domain.com"
         
         quotes.append(Quote(
             id: "1",
             quote: "I want to put a ding in the universe.",
             author: "Steve Jobs",
-            information: QuoteInformation(userID: "123"))
+            information: QuoteInformation(userID: "1"))
         )
     }
 }
