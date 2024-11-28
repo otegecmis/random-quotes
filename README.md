@@ -24,6 +24,15 @@ These are the `random quote`, `profile` and `settings` screens.
     <img src="Previews/LightMode/3.png" style="width: 30%;" />
 </div>
 
+#### Auth
+
+##### Sign In
+
+<div style="float: left;">
+    <img src="Previews/LightMode/Auth/1.png" style="width: 30%;" />
+    <img src="Previews/LightMode/Auth/2.png" style="width: 30%;" /> 
+</div>
+
 ### 2. Installation
 
 1. **Clone the repository**
