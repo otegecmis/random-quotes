@@ -17,6 +17,7 @@ struct Endpoints {
     }
     
     struct Quotes {
+        static let createQuote = "\(getBaseURL())/quotes"
         static let randomQuote = "\(getBaseURL())/quotes/random"
     }
 }

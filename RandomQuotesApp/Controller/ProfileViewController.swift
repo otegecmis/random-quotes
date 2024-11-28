@@ -110,7 +110,17 @@ final class ProfileViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func createQuoteButtonTapped() {
-        presentAlertOnMainThread(title: "Coming Soon", message: "This feature is coming soon.", buttonTitle: "Done")
+        let createQuoteViewController = CreateQuoteViewController()
+        let navigationController = UINavigationController(rootViewController: createQuoteViewController)
+        
+        navigationController.modalPresentationStyle = .pageSheet
+        
+        if let sheet = navigationController.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+        }
+        
+        present(navigationController, animated: true, completion: nil)
     }
 }
 
