@@ -21,6 +21,16 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
+    private lazy var createQuoteButton: RQButton = {
+        let button = RQButton()
+        button.setTitle("Create Quote", for: .normal)
+        button.setTitleColor(.systemBackground, for: .normal)
+        button.backgroundColor = .label
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .medium)
+        
+        return button
+    }()
+    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "QuoteCell")
@@ -46,17 +56,24 @@ final class ProfileViewController: UIViewController {
     // MARK: - Helpers
     private func configureViewController() {
         navigationController?.setNavigationBarHidden(true, animated: false)
+        createQuoteButton.addTarget(self, action: #selector(createQuoteButtonTapped), for: .touchUpInside)
     }
     
     private func configureUI() {
         view.backgroundColor = .systemBackground
         view.addSubview(namesurnameLabel)
         view.addSubview(quotesCountLabel)
+        view.addSubview(createQuoteButton)
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
             namesurnameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             namesurnameLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            
+            createQuoteButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            createQuoteButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            createQuoteButton.heightAnchor.constraint(equalToConstant: 44),
+            createQuoteButton.widthAnchor.constraint(equalToConstant: 120),
             
             quotesCountLabel.topAnchor.constraint(equalTo: namesurnameLabel.bottomAnchor, constant: 5),
             quotesCountLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
@@ -89,6 +106,11 @@ final class ProfileViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    // MARK: - Actions
+    @objc private func createQuoteButtonTapped() {
+        presentAlertOnMainThread(title: "Coming Soon", message: "This feature is coming soon.", buttonTitle: "Done")
     }
 }
 
