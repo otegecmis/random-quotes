@@ -1,6 +1,25 @@
 import UIKit
 import WebKit
 
+// MARK: - Supporting Types
+struct WebPageURLs {
+    static let privacyPolicy = "https://www.example.com/privacy"
+    static let termOfService = "https://www.example.com/terms"
+}
+
+struct SettingItem {
+    let title: String
+    let detail: String?
+    let action: SettingAction
+}
+
+enum SettingAction {
+    case push(viewController: UIViewController)
+    case openWeb(url: URL)
+    case selector(action: () -> Void)
+    case none
+}
+
 // MARK: - SettingsViewController
 final class SettingsViewController: UIViewController {
     
@@ -16,9 +35,9 @@ final class SettingsViewController: UIViewController {
             }))
         ],
         [
-            SettingItem(title: "Privacy Policy", detail: nil, action: .openWeb(url: URL(string: URLs.privacyPolicy)!)),
-            SettingItem(title: "Terms of Service", detail: nil, action: .openWeb(url: URL(string: URLs.termOfService)!)),
-            SettingItem(title: "Contact", detail: URLs.email, action: .none),
+            SettingItem(title: "Privacy Policy", detail: nil, action: .openWeb(url: URL(string: WebPageURLs.privacyPolicy)!)),
+            SettingItem(title: "Terms of Service", detail: nil, action: .openWeb(url: URL(string: WebPageURLs.termOfService)!)),
+            SettingItem(title: "Contact", detail: "support@example.com", action: .none),
         ]
     ]
     

@@ -1,6 +1,15 @@
 import UIKit
 import WebKit
 
+// MARK: - Supporting Types
+struct UpdateInformationItem {
+    let title: String
+    let detail: String?
+    let accessoryView: UIImage?
+    let push: UIViewController
+}
+
+// MARK: - UpdateInformationViewController
 final class UpdateInformationViewController: UIViewController {
     
     // MARK: - Properties
