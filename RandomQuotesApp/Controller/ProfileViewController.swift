@@ -162,7 +162,41 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completionHandler in
+            guard let self = self else { return }
+            let quote = self.quotes[indexPath.row]
+            
+            QuotesService().deleteQuote(quoteID: quote.id) { result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        self.presentAlertOnMainThread(title: "Success", message: "Quote deleted successfully.", buttonTitle: "Done") {
+                            self.quotes.remove(at: indexPath.row)
+                            tableView.deleteRows(at: [indexPath], with: .automatic)
+                        }
+                    case .failure(let error):
+                        self.presentAlertOnMainThread(title: "Error", message: error.localizedDescription, buttonTitle: "Done")
+                    }
+                }
+            }
+            
+            completionHandler(true)
+        }
+        
+        let updateAction = UIContextualAction(style: .normal, title: "Update") { _, _, completionHandler in
+            let quote = self.quotes[indexPath.row]
+            self.presentAlertOnMainThread(title: "Update Quote", message: "Update quote: \(quote.quote)", buttonTitle: "Done")
+            
+            completionHandler(true)
+        }
+        
+        updateAction.backgroundColor = .systemBlue
+        return UISwipeActionsConfiguration(actions: [deleteAction, updateAction])
+    }
 }
+
 
 @available(iOS 17.0, *)
 #Preview {
