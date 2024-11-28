@@ -1,9 +1,9 @@
 import Foundation
 
 struct Endpoints {
-    static let baseURL = ""
+    private static let baseURL = ""
     
-    static func getBaseURL() -> String {
+    private static func getBaseURL() -> String {
         return baseURL.isEmpty ? "http://localhost:8000/api" : baseURL
     }
     
@@ -15,7 +15,7 @@ struct Endpoints {
     struct Users {
         static let getUser = "\(getBaseURL())/users"
     }
-        
+    
     struct Quotes {
         static let randomQuote = "\(getBaseURL())/quotes/random"
     }

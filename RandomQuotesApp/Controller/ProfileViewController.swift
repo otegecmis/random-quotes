@@ -12,7 +12,7 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
-    private lazy var emailLabel: UILabel = {
+    private lazy var quotesCountLabel: UILabel = {
         let label = UILabel()
         label.textColor = .secondaryLabel
         label.font = UIFont.systemFont(ofSize: 16)
@@ -38,39 +38,40 @@ final class ProfileViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.setNavigationBarHidden(true, animated: false)
         configureViewController()
         configureUI()
-        getData()
+        getUser()
     }
     
     // MARK: - Helpers
     private func configureViewController() {
-        view.backgroundColor = .systemBackground
+        navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     private func configureUI() {
+        view.backgroundColor = .systemBackground
         view.addSubview(namesurnameLabel)
-        view.addSubview(emailLabel)
+        view.addSubview(quotesCountLabel)
         view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
             namesurnameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             namesurnameLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             
-            emailLabel.topAnchor.constraint(equalTo: namesurnameLabel.bottomAnchor, constant: 5),
-            emailLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            quotesCountLabel.topAnchor.constraint(equalTo: namesurnameLabel.bottomAnchor, constant: 5),
+            quotesCountLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             
-            tableView.topAnchor.constraint(equalTo: emailLabel.bottomAnchor, constant: 10),
+            tableView.topAnchor.constraint(equalTo: quotesCountLabel.bottomAnchor, constant: 10),
             tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
     
-    private func getData() {
+    // MARK: - Network
+    private func getUser() {
         guard let userID = UserDefaults.standard.string(forKey: "userID") else {
-            presentAlertOnMainThread(title: "Error", message: "User ID not found. Please log in again.", buttonTitle: "Done")
+            presentAlertOnMainThread(title: "Error", message: "Something wrong with your user ID.", buttonTitle: "Done")
             return
         }
         
@@ -78,19 +79,16 @@ final class ProfileViewController: UIViewController {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let user):
-                    self?.updateUI(with: user)
+                    self?.namesurnameLabel.text = "\(user.name) \(user.surname)"
+                    self?.quotesCountLabel.text = "\(user.quotes.count) Quotes"
+                    self?.quotes = user.quotes
+                    
+                    self?.tableView.reloadData()
                 case .failure(let error):
                     self?.presentAlertOnMainThread(title: "Error", message: error.localizedDescription, buttonTitle: "Done")
                 }
             }
         }
-    }
-    
-    private func updateUI(with user: User) {
-        namesurnameLabel.text = "\(user.name) \(user.surname)"
-        emailLabel.text = "\(user.quotes.count) Quotes"
-        quotes = user.quotes
-        tableView.reloadData()
     }
 }
 
@@ -110,9 +108,10 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         let quote = quotes[indexPath.row]
         
         cell.textLabel?.text = quote.quote
+        cell.textLabel?.numberOfLines = 0
+        
         cell.detailTextLabel?.text = quote.author
         cell.detailTextLabel?.textColor = .lightGray
-        cell.textLabel?.numberOfLines = 0
         
         return cell
     }

@@ -2,7 +2,7 @@ import UIKit
 
 class QuoteLabel: UILabel {
     
-    // MARK: - Lifecycle
+    // MARK: - Initializers
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()

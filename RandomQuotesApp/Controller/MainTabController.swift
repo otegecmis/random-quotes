@@ -17,14 +17,14 @@ final class MainTabController: UITabBarController {
         super.viewDidAppear(animated)
         
         if !isUserLoggedIn() {
-            showSignInScreen()
+            showSignIn()
         }
     }
     
     // MARK: - Helpers
     private func configureViewControllers() {
         view.backgroundColor = .systemBackground
-       
+        
         let profileViewController = tabController(title: "Profile", image: "person", viewController: ProfileViewController())
         let randomQuoteViewController = tabController(title: "Random Quote", image: "quote.bubble", viewController: RandomQuoteViewController())
         let settingsViewController = tabController(title: "Settings", image: "gearshape", viewController: SettingsViewController())
@@ -33,12 +33,12 @@ final class MainTabController: UITabBarController {
         selectedIndex = 1
     }
     
-    private func showSignInScreen() {
+    private func showSignIn() {
         let signInViewController = SignInViewController()
-        let navController = UINavigationController(rootViewController: signInViewController)
+        let navigationController = UINavigationController(rootViewController: signInViewController)
         
-        navController.modalPresentationStyle = .fullScreen
-        present(navController, animated: true, completion: nil)
+        navigationController.modalPresentationStyle = .fullScreen
+        present(navigationController, animated: true, completion: nil)
     }
     
     private func isUserLoggedIn() -> Bool {
@@ -47,23 +47,6 @@ final class MainTabController: UITabBarController {
         }
         
         return false
-    }
-}
-
-// MARK: - Extension
-extension UITabBarController {
-    
-    // MARK: - Helpers
-    func tabController(title: String, image: String, viewController: UIViewController) -> UINavigationController {
-        let nav = UINavigationController(rootViewController: viewController)
-        
-        nav.view.backgroundColor = .systemBackground
-        nav.tabBarItem.image = UIImage(systemName: image)
-        nav.title = title
-        
-        UITabBar.appearance().tintColor = .label
-        
-        return nav
     }
 }
 
