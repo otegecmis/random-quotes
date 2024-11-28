@@ -1,6 +1,6 @@
 import UIKit
 
-final class DeactivateAccountViewController: UIViewController {
+class UpdateMailViewController: UIViewController {
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -11,7 +11,7 @@ final class DeactivateAccountViewController: UIViewController {
     
     // MARK: - Helpers
     private func configureViewController() {
-        title = "Deactivate Account"
+        title = "Update Mail"
     }
     
     private func configureUI() {
@@ -21,5 +21,5 @@ final class DeactivateAccountViewController: UIViewController {
 
 @available(iOS 17.0, *)
 #Preview {
-    DeactivateAccountViewController()
+    UpdateMailViewController()
 }

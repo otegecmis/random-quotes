@@ -1,20 +1,6 @@
 import UIKit
 import WebKit
 
-// MARK: - Supporting Models
-struct SettingItem {
-    let title: String
-    let detail: String?
-    let action: SettingAction
-}
-
-enum SettingAction {
-    case push(viewController: UIViewController)
-    case openWeb(url: URL)
-    case selector(action: () -> Void)
-    case none
-}
-
 // MARK: - SettingsViewController
 final class SettingsViewController: UIViewController {
     
@@ -30,31 +16,32 @@ final class SettingsViewController: UIViewController {
             }))
         ],
         [
-            SettingItem(title: "Privacy Policy", detail: nil, action: .openWeb(url: URL(string: "https://example.com/privacy")!)),
-            SettingItem(title: "Terms of Service", detail: nil, action: .openWeb(url: URL(string: "https://example.com/terms")!)),
-            SettingItem(title: "Contact", detail: "support@example.com", action: .none),
+            SettingItem(title: "Privacy Policy", detail: nil, action: .openWeb(url: URL(string: URLs.privacyPolicy)!)),
+            SettingItem(title: "Terms of Service", detail: nil, action: .openWeb(url: URL(string: URLs.termOfService)!)),
+            SettingItem(title: "Contact", detail: URLs.email, action: .none),
         ]
     ]
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureViewController()
         configureUI()
-        configureTableView()
     }
     
     // MARK: - Helpers
-    func configureUI() {
-        view.backgroundColor = .systemBackground
+    private func configureViewController() {
         title = "Settings"
-    }
-    
-    func configureTableView() {
+        
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        
+    }
+    
+    private func configureUI() {
+        view.backgroundColor = .systemBackground
         view.addSubview(tableView)
+        
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -62,9 +49,9 @@ final class SettingsViewController: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        
     }
     
-    // MARK: - Actions
     private func logout() {
         UserDefaults.standard.removeObject(forKey: "access_token")
         UserDefaults.standard.removeObject(forKey: "refresh_token")
@@ -73,11 +60,11 @@ final class SettingsViewController: UIViewController {
         
         DispatchQueue.main.async {
             let signInViewController = SignInViewController()
-            let navController = UINavigationController(rootViewController: signInViewController)
-            navController.modalPresentationStyle = .fullScreen
+            let navigationController = UINavigationController(rootViewController: signInViewController)
+            navigationController.modalPresentationStyle = .fullScreen
             
             if let window = UIApplication.shared.windows.first {
-                window.rootViewController = navController
+                window.rootViewController = navigationController
                 window.makeKeyAndVisible()
             }
         }

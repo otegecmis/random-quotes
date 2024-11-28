@@ -7,18 +7,24 @@ class RQTextField: UITextField {
         super.init(frame: .zero)
         
         self.placeholder = placeholder
-        self.borderStyle = .roundedRect
-        self.autocapitalizationType = .none
-        self.clearButtonMode = .always
         
         if isSecureTextEntry {
             self.isSecureTextEntry = true
         }
         
-        self.translatesAutoresizingMaskIntoConstraints = false
+        configure()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Helpers
+    private func configure() {
+        translatesAutoresizingMaskIntoConstraints = false
+        
+        borderStyle = .roundedRect
+        autocapitalizationType = .none
+        clearButtonMode = .always
     }
 }

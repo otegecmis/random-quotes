@@ -30,13 +30,21 @@ final class SignInViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureViewController()
         configureUI()
     }
     
     // MARK: - Helpers
-    func configureUI() {
-        view.backgroundColor = .systemBackground
+    private func configureViewController() {
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
         
+        signInButton.addTarget(self, action: #selector(signInTapped), for: .touchUpInside)
+        forgotPasswordButton.addTarget(self, action: #selector(forgotPasswordTapped), for: .touchUpInside)
+        createAccountButton.addTarget(self, action: #selector(createAccountTapped), for: .touchUpInside)
+    }
+    
+    private func configureUI() {
+        view.backgroundColor = .systemBackground
         view.addSubview(headerIcon)
         view.addSubview(headerMessage)
         view.addSubview(emailTextField)
@@ -44,8 +52,6 @@ final class SignInViewController: UIViewController {
         view.addSubview(signInButton)
         view.addSubview(forgotPasswordButton)
         view.addSubview(createAccountButton)
-        
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
         
         NSLayoutConstraint.activate([
             headerIcon.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -81,10 +87,6 @@ final class SignInViewController: UIViewController {
             createAccountButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -50),
             createAccountButton.heightAnchor.constraint(equalToConstant: 50),
         ])
-        
-        signInButton.addTarget(self, action: #selector(signInTapped), for: .touchUpInside)
-        forgotPasswordButton.addTarget(self, action: #selector(forgotPasswordTapped), for: .touchUpInside)
-        createAccountButton.addTarget(self, action: #selector(createAccountTapped), for: .touchUpInside)
     }
     
     // MARK: - Actions

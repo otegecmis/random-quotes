@@ -5,6 +5,7 @@ final class RandomQuoteViewController: UIViewController {
     // MARK: - Properties
     private lazy var quoteLabel = QuoteLabel(color: .label, fontSize: 24)
     private lazy var authorLabel = QuoteLabel(color: .secondaryLabel, fontSize: 18)
+    
     private lazy var refreshControl = UIRefreshControl()
     private lazy var scrollView = UIScrollView()
     
@@ -13,7 +14,6 @@ final class RandomQuoteViewController: UIViewController {
         super.viewDidLoad()
         configureViewController()
         configureUI()
-        configureRefreshControl()
         getRandomQuote()
     }
     
@@ -22,11 +22,14 @@ final class RandomQuoteViewController: UIViewController {
     }
     
     // MARK: - Helpers
-    func configureViewController() {
+    private func configureViewController() {
         title = "Random Quote"
+        
+        refreshControl.addTarget(self, action: #selector(refreshQuote), for: .valueChanged)
+        scrollView.refreshControl = refreshControl
     }
     
-    func configureUI() {
+    private func configureUI() {
         view.backgroundColor = .systemBackground
         view.addSubview(scrollView)
         
@@ -50,12 +53,8 @@ final class RandomQuoteViewController: UIViewController {
         ])
     }
     
-    func configureRefreshControl() {
-        refreshControl.addTarget(self, action: #selector(refreshQuote), for: .valueChanged)
-        scrollView.refreshControl = refreshControl
-    }
-    
-    func getRandomQuote() {
+    // MARK: - Network
+    private func getRandomQuote() {
         QuotesService().fetchRandomQuote { [weak self] result in
             guard let self = self else { return }
             
@@ -74,7 +73,7 @@ final class RandomQuoteViewController: UIViewController {
     }
     
     // MARK: - Actions
-    @objc func refreshQuote() {
+    @objc private func refreshQuote() {
         getRandomQuote()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {

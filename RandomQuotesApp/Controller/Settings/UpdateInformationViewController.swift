@@ -1,15 +1,6 @@
 import UIKit
 import WebKit
 
-// MARK: - Supporting Models
-struct UpdateInformationItem {
-    let title: String
-    let detail: String?
-    let accessoryView: UIImage?
-    let push: UIViewController
-}
-
-// MARK: - SettingsViewController
 final class UpdateInformationViewController: UIViewController {
     
     // MARK: - Properties
@@ -20,7 +11,7 @@ final class UpdateInformationViewController: UIViewController {
         [
             UpdateInformationItem(title: "Name Surname", detail: nil, accessoryView: UIImage(systemName: "pencil.and.list.clipboard"), push: UpdateNameSurnameViewController()),
             UpdateInformationItem(title: "Password", detail: nil, accessoryView: UIImage(systemName: "key"), push: UpdatePasswordViewController()),
-            UpdateInformationItem(title: "E-Mail", detail: nil, accessoryView: UIImage(systemName: "mail"), push: UpdateEMailViewController()),
+            UpdateInformationItem(title: "Mail", detail: nil, accessoryView: UIImage(systemName: "mail"), push: UpdateMailViewController()),
             UpdateInformationItem(title: "Deactivate", detail: nil, accessoryView: UIImage(systemName: "person.slash"), push: DeactivateAccountViewController())
         ]
     ]
@@ -28,22 +19,23 @@ final class UpdateInformationViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureViewController()
         configureUI()
-        configureTableView()
     }
     
     // MARK: - Helpers
-    func configureUI() {
-        view.backgroundColor = .systemBackground
+    private func configureViewController() {
         title = "Update Information"
-    }
-    
-    func configureTableView() {
+        
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        
+    }
+    
+    private func configureUI() {
+        view.backgroundColor = .systemBackground
         view.addSubview(tableView)
+        
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.topAnchor),
@@ -69,16 +61,18 @@ extension UpdateInformationViewController: UITableViewDataSource {
         let item = items[indexPath.section][indexPath.row]
         
         cell.textLabel?.text = item.title
+        
         cell.detailTextLabel?.text = item.detail
         cell.detailTextLabel?.textColor = .gray
+        
         cell.selectionStyle = .none
-                
+        cell.tintColor = .label
+        
         if item.accessoryView == nil {
             cell.accessoryType = .disclosureIndicator
         }
         
         cell.accessoryView = UIImageView(image: item.accessoryView)
-        cell.tintColor = .label
         
         return cell
     }
@@ -93,9 +87,7 @@ extension UpdateInformationViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let selectedItem = items[indexPath.section][indexPath.row]
-        
-        navigationController?.pushViewController(selectedItem.push, animated: true)
+        navigationController?.pushViewController(items[indexPath.section][indexPath.row].push, animated: true)
     }
 }
 
