@@ -28,13 +28,26 @@ final class SignInViewController: UIViewController {
         return label
     }()
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         configureViewController()
         configureUI()
+        configureNotificationObservers()
+    }
+    
+    // Deinitializer
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     // MARK: - Helpers
+    private func configureNotificationObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
     private func configureViewController() {
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
         
@@ -122,10 +135,6 @@ final class SignInViewController: UIViewController {
     
     @objc private func createAccountTapped() {
         self.presentAlertOnMainThread(title: "Create Account", message: "This feature is not yet implemented.", buttonTitle: "Done")
-    }
-    
-    @objc func dismissKeyboard() {
-        view.endEditing(true)
     }
 }
 
