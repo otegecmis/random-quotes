@@ -61,8 +61,8 @@ final class RandomQuoteViewController: UIViewController {
             switch result {
             case .success(let quote):
                 DispatchQueue.main.async {
-                    self.quoteLabel.text = quote.quote
-                    self.authorLabel.text = quote.author
+                    self.quoteLabel.text = "\"\(quote.quote)\""
+                    self.authorLabel.text = "— \(quote.author)"
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
