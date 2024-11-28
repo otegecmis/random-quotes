@@ -12,12 +12,13 @@ class RQButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init(title: String, fontColor: UIColor, bgColor: UIColor) {
+    init(title: String, fontColor: UIColor, bgColor: UIColor, height: CGFloat = 50) {
         super.init(frame: .zero)
         
         setTitle(title, for: .normal)
         setTitleColor(fontColor, for: .normal)
         backgroundColor = bgColor
+        heightAnchor.constraint(equalToConstant: height).isActive = true
         
         configure()
     }
@@ -28,5 +29,7 @@ class RQButton: UIButton {
         
         layer.cornerRadius = 5
         layer.borderWidth = 1
+        
+        
     }
 }
