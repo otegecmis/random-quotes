@@ -38,7 +38,7 @@ class QuotesService {
                     completion(.failure(error))
                 }
             } else if httpResponse.statusCode == 401 {
-                AuthManager.shared.refreshTokens { result in
+                AuthService().refreshTokens { result in
                     switch result {
                     case .success:
                         self.fetchRandomQuote(completion: completion)
