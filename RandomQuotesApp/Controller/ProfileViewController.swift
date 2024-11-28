@@ -44,6 +44,7 @@ final class ProfileViewController: UIViewController {
     }()
     
     private var quotes: [Quote] = [Quote]()
+    private lazy var refreshControl = UIRefreshControl()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -57,6 +58,8 @@ final class ProfileViewController: UIViewController {
     private func configureViewController() {
         navigationController?.setNavigationBarHidden(true, animated: false)
         createQuoteButton.addTarget(self, action: #selector(createQuoteButtonTapped), for: .touchUpInside)
+        refreshControl.addTarget(self, action: #selector(refreshGetUser), for: .valueChanged)
+        tableView.refreshControl = refreshControl
     }
     
     private func configureUI() {
@@ -121,6 +124,14 @@ final class ProfileViewController: UIViewController {
         }
         
         present(navigationController, animated: true, completion: nil)
+    }
+    
+    @objc private func refreshGetUser() {
+        getUser()
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.refreshControl.endRefreshing()
+        }
     }
 }
 
