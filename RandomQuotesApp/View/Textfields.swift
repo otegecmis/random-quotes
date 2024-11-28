@@ -3,10 +3,11 @@ import UIKit
 class RQTextField: UITextField {
     
     // MARK: - Initializers
-    init(placeholder: String, isSecureTextEntry: Bool = false) {
+    init(placeholder: String, isSecureTextEntry: Bool = false, height: CGFloat = 50) {
         super.init(frame: .zero)
         
         self.placeholder = placeholder
+        heightAnchor.constraint(equalToConstant: height).isActive = true
         
         if isSecureTextEntry {
             self.isSecureTextEntry = true
