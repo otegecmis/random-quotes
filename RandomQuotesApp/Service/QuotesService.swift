@@ -74,7 +74,7 @@ class QuotesService {
         
         task.resume()
     }
-
+    
     
     func fetchRandomQuote(completion: @escaping (Result<Quote, Error>) -> Void) {
         guard let accessToken = UserDefaults.standard.string(forKey: "access_token") else {
@@ -132,4 +132,50 @@ class QuotesService {
         
         task.resume()
     }
+    
+    func deleteQuote(quoteID: String, completion: @escaping (Result<Void, Error>) -> Void) {
+        guard let accessToken = UserDefaults.standard.string(forKey: "access_token") else {
+            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No access token found, please sign in again."])))
+            return
+        }
+        
+        guard let url = URL(string: "http://localhost:8000/api/quotes/\(quoteID)") else {
+            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "DELETE"
+        request.addValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+        
+        let task = URLSession.shared.dataTask(with: request) { _, response, error in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid Response"])))
+                return
+            }
+            
+            if httpResponse.statusCode == 204 {
+                completion(.success(()))
+            } else if httpResponse.statusCode == 401 {
+                AuthService().refreshTokens { result in
+                    switch result {
+                    case .success:
+                        self.deleteQuote(quoteID: quoteID, completion: completion)
+                    case .failure(let error):
+                        completion(.failure(error))
+                    }
+                }
+            } else {
+                completion(.failure(NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed to delete quote."])))
+            }
+        }
+        
+        task.resume()
+    }
 }
+
