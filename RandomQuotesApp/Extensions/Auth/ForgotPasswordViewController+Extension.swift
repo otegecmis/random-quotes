@@ -20,8 +20,4 @@ extension ForgotPasswordViewController {
             self.navigationController?.navigationBar.isHidden = false
         }
     }
-    
-    @objc func dismissKeyboard() {
-        view.endEditing(true)
-    }
 }
