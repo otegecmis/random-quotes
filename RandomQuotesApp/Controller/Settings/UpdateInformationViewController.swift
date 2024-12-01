@@ -38,6 +38,8 @@ final class UpdateInformationViewController: UIViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
+        
+        navigationController?.navigationBar.tintColor = .label
     }
     
     private func configureUI() {
