@@ -18,8 +18,4 @@ extension SignInViewController {
             self.authHeaderView.showIconImageView()
         }
     }
-    
-    @objc func dismissKeyboard() {
-        view.endEditing(true)
-    }
 }
