@@ -113,17 +113,39 @@ final class ProfileViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func createQuoteButtonTapped() {
-        let createQuoteViewController = CreateQuoteViewController()
-        let navigationController = UINavigationController(rootViewController: createQuoteViewController)
-        
-        navigationController.modalPresentationStyle = .pageSheet
-        
-        if let sheet = navigationController.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
-            sheet.prefersGrabberVisible = true
+        presentQuoteFormAlert(
+            title: "Create Quote",
+            actionButtonTitle: "Create",
+            formType: .create
+        ) { quote, author in
+            let quoteText = quote.trimmingCharacters(in: .whitespacesAndNewlines)
+            let author = author.trimmingCharacters(in: .whitespacesAndNewlines)
+            
+            guard !quoteText.isEmpty else {
+                self.presentAlertOnMainThread(title: "Error", message: "Quote cannot be empty.", buttonTitle: "Ok")
+                return
+            }
+            
+            guard !author.isEmpty else {
+                self.presentAlertOnMainThread(title: "Error", message: "Author cannot be empty.", buttonTitle: "Ok")
+                return
+            }
+            
+            QuotesService().createQuote(quoteText: quoteText, author: author) { [weak self] result in
+                DispatchQueue.main.async {
+                    guard let self = self else { return }
+                    
+                    switch result {
+                    case .success(_):
+                        self.presentAlertOnMainThread(title: "Success", message: "Quote has been created successfully.", buttonTitle: "Done") {
+                            self.getUser()
+                        }
+                    case .failure(let error):
+                        self.presentAlertOnMainThread(title: "Error", message: error.localizedDescription, buttonTitle: "Ok")
+                    }
+                }
+            }
         }
-        
-        present(navigationController, animated: true, completion: nil)
     }
     
     @objc private func refreshGetUser() {
@@ -187,7 +209,14 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
         
         let updateAction = UIContextualAction(style: .normal, title: "Update") { _, _, completionHandler in
             let quote = self.quotes[indexPath.row]
-            self.presentAlertOnMainThread(title: "Update Quote", message: "Update quote: \(quote.quote)", buttonTitle: "Done")
+            
+            self.presentQuoteFormAlert(
+                title: "Update Quote",
+                actionButtonTitle: "Update",
+                formType: .update(existingQuote: quote.quote, existingAuthor: quote.author)
+            ) { quote, author in
+                print("Updated Quote: \(quote), Author: \(author)")
+            }
             
             completionHandler(true)
         }
