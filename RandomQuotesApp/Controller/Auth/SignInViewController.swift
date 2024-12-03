@@ -82,26 +82,23 @@ final class SignInViewController: UIViewController {
     
     // MARK: - Actions
     @objc private func signInTapped() {
-        guard let email = emailTextField.text, let password = passwordTextField.text else { return }
-        let credentials = ["email": email, "password": password]
+        let credentials = [
+            "email": emailTextField.text ?? "",
+            "password": passwordTextField.text ?? ""
+        ]
         
-        if credentials["email"] == "" || credentials["password"] == "" {
-            self.presentAlertOnMainThread(title: "Login Error", message: "Please don't leave any fields blank.", buttonTitle: "Done")
-            return
-        }
-        
-        AuthService.signIn(credentials: credentials) { result in
+        AuthManager.shared.signIn(credentials: credentials) { [weak self] result in
             switch result {
-            case .success(_):
+            case .success:
                 DispatchQueue.main.async {
                     let mainTabController = MainTabController()
                     mainTabController.modalPresentationStyle = .fullScreen
                     
-                    self.present(mainTabController, animated: true, completion: nil)
+                    self?.present(mainTabController, animated: true)
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
-                    self.presentAlertOnMainThread(title: "Login Error", message: error.localizedDescription, buttonTitle: "Done")
+                    self?.presentAlertOnMainThread(title: "Login Error", message: error.localizedDescription, buttonTitle: "OK")
                 }
             }
         }

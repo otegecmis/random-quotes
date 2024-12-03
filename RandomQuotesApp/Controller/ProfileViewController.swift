@@ -214,11 +214,25 @@ extension ProfileViewController: UITableViewDataSource, UITableViewDelegate {
                 title: "Update Quote",
                 actionButtonTitle: "Update",
                 formType: .update(existingQuote: quote.quote, existingAuthor: quote.author)
-            ) { quote, author in
-                print("Updated Quote: \(quote), Author: \(author)")
+            ) { updatedQuote, updatedAuthor in
+                let quoteText = updatedQuote.trimmingCharacters(in: .whitespacesAndNewlines)
+                let authorText = updatedAuthor.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                QuotesService().updateQuote(quoteID: quote.id, quoteText: quoteText, author: authorText) { result in
+                    DispatchQueue.main.async {
+                        switch result {
+                        case .success:
+                            self.presentAlertOnMainThread(title: "Success", message: "Quote updated successfully.", buttonTitle: "Done") {
+                                self.getUser()
+                            }
+                        case .failure(let error):
+                            self.presentAlertOnMainThread(title: "Error", message: error.localizedDescription, buttonTitle: "Done")
+                        }
+                    }
+                }
+                
+                completionHandler(true)
             }
-            
-            completionHandler(true)
         }
         
         updateAction.backgroundColor = .systemBlue

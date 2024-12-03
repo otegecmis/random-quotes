@@ -42,7 +42,7 @@ final class MainTabController: UITabBarController {
     }
     
     private func isUserLoggedIn() -> Bool {
-        if let accessToken = UserDefaults.standard.string(forKey: "access_token"), !accessToken.isEmpty {
+        if let token = TokenManager.shared.getAccessToken(), !token.isEmpty {
             return true
         }
         
