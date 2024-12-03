@@ -1,181 +1,96 @@
 import Foundation
 
-enum QuoteServiceError: Error {
-    case noData
-    case invalidResponse
-    case serverError(String)
-    case decodingError
+struct EmptyResponse: Codable {}
+
+struct QuoteResponse: Decodable {
+    let result: Quote
+}
+
+struct Quote: Decodable {
+    let id: String
+    let quote: String
+    let author: String
+    let information: QuoteInformation?
+}
+
+struct QuoteInformation: Decodable {
+    let userID: String
 }
 
 class QuotesService {
     func createQuote(quoteText: String, author: String, completion: @escaping (Result<Quote, Error>) -> Void) {
-        guard let accessToken = UserDefaults.standard.string(forKey: "access_token") else {
-            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No access token found, please sign in again."])))
-            return
-        }
-        
-        guard let url = URL(string: Endpoints.Quotes.createQuote) else {
-            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        let payload = [
+        let body = [
             "quote": quoteText,
             "author": author
         ]
         
-        do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: payload, options: [])
-        } catch {
-            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid request body"])))
-            return
-        }
+        let endpoint = Endpoints.Quotes.createQuote
         
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
+        NetworkManager.shared.request(
+            endpoint: endpoint,
+            method: .post,
+            body: body
+        ) { (result: Result<QuoteResponse, Error>) in
+            switch result {
+            case .success(let response):
+                completion(.success(response.result))
+            case .failure(let error):
                 completion(.failure(error))
-                return
-            }
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid Response"])))
-                return
-            }
-            
-            if httpResponse.statusCode == 201, let data = data {
-                do {
-                    let quoteResponse = try JSONDecoder().decode(QuoteResponse.self, from: data)
-                    completion(.success(quoteResponse.result))
-                } catch {
-                    completion(.failure(error))
-                }
-            } else if httpResponse.statusCode == 401 {
-                AuthService().refreshTokens { result in
-                    switch result {
-                    case .success:
-                        self.createQuote(quoteText: quoteText, author: author, completion: completion)
-                    case .failure(let error):
-                        completion(.failure(error))
-                    }
-                }
-            } else {
-                if let data = data, let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
-                    completion(.failure(NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: errorResponse.result.message])))
-                } else {
-                    completion(.failure(NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Unknown Error"])))
-                }
             }
         }
-        
-        task.resume()
     }
     
-    
     func fetchRandomQuote(completion: @escaping (Result<Quote, Error>) -> Void) {
-        guard let accessToken = UserDefaults.standard.string(forKey: "access_token") else {
-            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No access token found, please sign in again."])))
-            return
-        }
+        let endpoint = Endpoints.Quotes.randomQuote
         
-        var request = URLRequest(url: URL(string: Endpoints.Quotes.randomQuote)!)
-        
-        request.httpMethod = "GET"
-        request.addValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
+        NetworkManager.shared.request(
+            endpoint: endpoint,
+            method: .get
+        ) { (result: Result<QuoteResponse, Error>) in
+            switch result {
+            case .success(let response):
+                completion(.success(response.result))
+            case .failure(let error):
                 completion(.failure(error))
-                return
-            }
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid Response"])))
-                return
-            }
-            
-            if httpResponse.statusCode == 200, let data = data {
-                do {
-                    let quoteResponse = try JSONDecoder().decode(QuoteResponse.self, from: data)
-                    completion(.success(quoteResponse.result))
-                } catch {
-                    completion(.failure(error))
-                }
-            } else if httpResponse.statusCode == 401 {
-                AuthService().refreshTokens { result in
-                    switch result {
-                    case .success:
-                        self.fetchRandomQuote(completion: completion)
-                    case .failure(let error):
-                        completion(.failure(error))
-                    }
-                }
-            } else if httpResponse.statusCode == 429, let data = data {
-                do {
-                    let errorResponse = try JSONDecoder().decode(ErrorResponse.self, from: data)
-                    completion(.failure(NSError(domain: "", code: 429, userInfo: [NSLocalizedDescriptionKey: errorResponse.result.message])))
-                } catch {
-                    completion(.failure(NSError(domain: "", code: 429, userInfo: [NSLocalizedDescriptionKey: "Too many requests. Please try again later."])))
-                }
-            }  else {
-                if let data = data, let errorResponse = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
-                    completion(.failure(NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: errorResponse.result.message])))
-                } else {
-                    completion(.failure(NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Unknown Error"])))
-                }
             }
         }
+    }
+    
+    func updateQuote(quoteID: String, quoteText: String, author: String, completion: @escaping (Result<Quote, Error>) -> Void) {
+        let body = [
+            "quote": quoteText,
+            "author": author
+        ]
         
-        task.resume()
+        let endpoint = "\(Endpoints.Quotes.updateQuote)/\(quoteID)"
+        
+        NetworkManager.shared.request(
+            endpoint: endpoint,
+            method: .put,
+            body: body
+        ) { (result: Result<QuoteResponse, Error>) in
+            switch result {
+            case .success(let response):
+                completion(.success(response.result))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
     }
     
     func deleteQuote(quoteID: String, completion: @escaping (Result<Void, Error>) -> Void) {
-        guard let accessToken = UserDefaults.standard.string(forKey: "access_token") else {
-            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "No access token found, please sign in again."])))
-            return
-        }
+        let endpoint = "\(Endpoints.Quotes.deleteQuote)/\(quoteID)"
         
-        guard let url = URL(string: "http://localhost:8000/api/quotes/\(quoteID)") else {
-            completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "DELETE"
-        request.addValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        
-        let task = URLSession.shared.dataTask(with: request) { _, response, error in
-            if let error = error {
-                completion(.failure(error))
-                return
-            }
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                completion(.failure(NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "Invalid Response"])))
-                return
-            }
-            
-            if httpResponse.statusCode == 204 {
+        NetworkManager.shared.request(
+            endpoint: endpoint,
+            method: .delete
+        ) { (result: Result<EmptyResponse, Error>) in
+            switch result {
+            case .success:
                 completion(.success(()))
-            } else if httpResponse.statusCode == 401 {
-                AuthService().refreshTokens { result in
-                    switch result {
-                    case .success:
-                        self.deleteQuote(quoteID: quoteID, completion: completion)
-                    case .failure(let error):
-                        completion(.failure(error))
-                    }
-                }
-            } else {
-                completion(.failure(NSError(domain: "", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Failed to delete quote."])))
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
-        
-        task.resume()
     }
 }
-
