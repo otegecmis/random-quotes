@@ -72,19 +72,23 @@ final class SettingsViewController: UIViewController {
     }
     
     private func logout() {
-        UserDefaults.standard.removeObject(forKey: "access_token")
-        UserDefaults.standard.removeObject(forKey: "refresh_token")
-        UserDefaults.standard.removeObject(forKey: "userID")
-        UserDefaults.standard.synchronize()
-        
-        DispatchQueue.main.async {
-            let signInViewController = SignInViewController()
-            let navigationController = UINavigationController(rootViewController: signInViewController)
-            navigationController.modalPresentationStyle = .fullScreen
-            
-            if let window = UIApplication.shared.windows.first {
-                window.rootViewController = navigationController
-                window.makeKeyAndVisible()
+        AuthManager.shared.logout { [weak self] result in
+            switch result {
+            case .success:
+                DispatchQueue.main.async {
+                    if let window = UIApplication.shared.windows.first {
+                        let signInViewController = SignInViewController()
+                        let navigationController = UINavigationController(rootViewController: signInViewController)
+                        navigationController.modalPresentationStyle = .fullScreen
+                        
+                        window.rootViewController = navigationController
+                        window.makeKeyAndVisible()
+                    }
+                }
+            case .failure(let error):
+                DispatchQueue.main.async {
+                    self?.presentAlertOnMainThread(title: "Error", message: error.localizedDescription, buttonTitle: "OK")
+                }
             }
         }
     }

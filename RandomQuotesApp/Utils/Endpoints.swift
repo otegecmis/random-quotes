@@ -1,23 +1,32 @@
 import Foundation
 
 struct Endpoints {
-    private static let baseURL = ""
+    private static var baseURL: String {
+#if DEBUG
+        return "http://127.0.0.1:8000/api"
+#else
+        return "https://api.example.com"
+#endif
+    }
     
-    private static func getBaseURL() -> String {
-        return baseURL.isEmpty ? "http://localhost:8000/api" : baseURL
+    private static func buildURL(_ path: String) -> String {
+        return "\(baseURL)\(path)"
     }
     
     struct Auth {
-        static let signIn = "\(getBaseURL())/users/login"
-        static let refreshTokens = "\(getBaseURL())/users/refresh-tokens"
+        static let signIn = buildURL("/users/login")
+        static let refreshTokens = buildURL("/users/refresh-tokens")
+        static let logout = buildURL("/users/logout")
     }
     
     struct Users {
-        static let getUser = "\(getBaseURL())/users"
+        static let getUser = buildURL("/users")
     }
     
     struct Quotes {
-        static let createQuote = "\(getBaseURL())/quotes"
-        static let randomQuote = "\(getBaseURL())/quotes/random"
+        static let createQuote = buildURL("/quotes")
+        static let randomQuote = buildURL("/quotes/random")
+        static let updateQuote = buildURL("/quotes")
+        static let deleteQuote = buildURL("/quotes")
     }
 }
